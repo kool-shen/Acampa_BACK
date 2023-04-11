@@ -107,6 +107,52 @@ router.get("/folders", function (req, res) {
   });
 });
 
+/// Route index prestations ///
+
+router.get("/indexPresta", async (req, res) => {
+  try {
+    const { folders } = await cloudinary.api.sub_folders("Prestations");
+    const sortedFolders = folders.sort((a, b) => a.name.localeCompare(b.name));
+    const folderNames = sortedFolders.map((folder) => folder.name);
+    res.json(folderNames);
+    console.log(folderNames[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des sous-dossiers");
+  }
+});
+
+/// Photos de presta ///
+
+router.get("/prestations", function (req, res) {
+  const expression = `folder:Prestations/* `;
+
+  cloudinary.search
+    .expression(expression)
+    .sort_by("public_id", "desc")
+    .max_results(500)
+    .with_field("metadata")
+    .with_field("context")
+    .execute()
+    .then((result) => {
+      const sortedResources = result.resources.sort((a, b) =>
+        a.folder.localeCompare(b.folder)
+      );
+      const filteredData = sortedResources.map((item) => {
+        return {
+          collection: item.folder.split("/").pop(),
+          src: item.secure_url,
+          height: item.height,
+          width: item.width,
+          metadata: item.metadata,
+          context: item.context,
+        };
+      });
+      res.json(filteredData);
+      console.log(filteredData);
+    })
+    .catch((error) => console.error());
+});
 //// Route test ////
 
 router.get("/test", function (req, res) {
