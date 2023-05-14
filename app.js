@@ -23,6 +23,8 @@ const cors = require("cors");
 app.use(cors());
 
 const allowedOrigins = [
+  "http://localhost:3001",
+
   "http://localhost:3000",
   "https://acampa-front.vercel.app",
 ];

@@ -74,7 +74,6 @@ router.get("/shop", function (req, res) {
       );
       const sortedData = flowers.concat(others);
       res.json(sortedData);
-      console.log(sortedData);
     })
     .catch((error) => console.error());
 });
@@ -84,7 +83,6 @@ router.get("/shop", function (req, res) {
 router.get("/folders", function (req, res) {
   cloudinary.api.sub_folders("Shop", function (error, result) {
     if (error) {
-      console.log();
       res.status(500).send("Erreur lors de la récupération des sous-dossiers");
     } else {
       const folders = result.folders;
@@ -101,6 +99,7 @@ router.get("/folders", function (req, res) {
         folders.unshift(fleursObj);
       }
       res.json(folders);
+      console.log(folders);
     }
   });
 });
