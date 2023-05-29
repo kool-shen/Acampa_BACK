@@ -63,6 +63,7 @@ router.get("/shop", function (req, res) {
           height: item.height,
           width: item.width,
           metadata: item.metadata,
+
           context: item.context,
         };
       });
@@ -74,13 +75,87 @@ router.get("/shop", function (req, res) {
       );
       const sortedData = flowers.concat(others);
       res.json(sortedData);
+      console.log(resources);
     })
     .catch((error) => console.error());
 });
 
+///Génère page collection shop ///
+
+router.get("/collection", async (req, res) => {
+  const { collection } = req.query;
+
+  try {
+    const expression = `folder:"Shop/${collection}"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(500)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        collection: item.folder.split("/").pop(),
+        src: item.secure_url,
+        height: item.height,
+        width: item.width,
+        name: item.metadata.nom_du_produit,
+        price: item.metadata.prix,
+        context: item.context,
+        duree: item.metadata.duree,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log(filteredData);
+    console.log(collection);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//// Génère page produit ///
+
+router.get("/product", async (req, res) => {
+  const { product } = req.query;
+  try {
+    const expression = `folder:Shop/* AND metadata.nom_du_produit:"${product}" AND metadata.nom_du_produit = "${product}"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(500)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        collection: item.folder.split("/").pop(),
+        src: item.secure_url,
+        height: item.height,
+        width: item.width,
+        metadata: item.metadata,
+
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log("yo");
+    console.log(product);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 /// sous catégories du shop, avec "Fleurs" en premier ////
 
-router.get("/folders", function (req, res) {
+router.get("/shopSubcategories", function (req, res) {
   cloudinary.api.sub_folders("Shop", function (error, result) {
     if (error) {
       res.status(500).send("Erreur lors de la récupération des sous-dossiers");
@@ -98,6 +173,20 @@ router.get("/folders", function (req, res) {
       if (fleursObj) {
         folders.unshift(fleursObj);
       }
+      res.json(folders);
+      console.log(folders);
+    }
+  });
+});
+
+/// sous catégories du shop, avec "Fleurs" en premier ////
+
+router.get("/aboutSubcategories", function (req, res) {
+  cloudinary.api.sub_folders("À Propos", function (error, result) {
+    if (error) {
+      res.status(500).send("Erreur lors de la récupération des sous-dossiers");
+    } else {
+      const folders = result.folders;
       res.json(folders);
       console.log(folders);
     }
@@ -150,7 +239,186 @@ router.get("/prestations", function (req, res) {
     })
     .catch((error) => console.error());
 });
-//// Route test ////
+
+/// Route texte actu partie supérieure ///
+
+router.get("/texteActu", async (req, res) => {
+  const { collection } = req.query;
+
+  try {
+    const expression = `folder:"À Propos/Actu/Partie supérieure"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(500)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        collection: item.folder.split("/").pop(),
+        src: item.secure_url,
+        height: item.height,
+        width: item.width,
+        name: item.metadata.nom_du_produit,
+        price: item.metadata.prix,
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log(filteredData);
+    console.log(collection);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/// route produits actu ///
+
+router.get("/produitsActu", async (req, res) => {
+  const { collection } = req.query;
+
+  try {
+    const expression = `folder:"À Propos/Actu/Partie inférieure"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(4)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        src: item.secure_url,
+        height: item.height,
+        width: item.width,
+        ligne1: item.metadata?.ligne1,
+        ligne2: item.metadata?.ligne2,
+
+        ref: item.metadata?.ml4tdfywqkkgth7uun95,
+        link: item.metadata?.jylb3tg4da9hlww71c4n,
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log(filteredData);
+    console.log(collection);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/// route Acampa ///
+
+router.get("/acampa", async (req, res) => {
+  const { collection } = req.query;
+
+  try {
+    const expression = `folder:"À Propos/Acampà"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(4)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        src: item.secure_url,
+        collection: item.collection,
+        height: item.height,
+        width: item.width,
+        ligne1: item.metadata?.ligne1,
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log(filteredData);
+    console.log(collection);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/// route Mentions Légales ///
+
+router.get("/mentions", async (req, res) => {
+  const { collection } = req.query;
+
+  try {
+    const expression = `folder:"À Propos/Mentions Légales"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(4)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        ligne1: item.metadata?.ligne1,
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log(filteredData);
+    console.log(collection);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/// route Contact ///
+
+router.get("/contact", async (req, res) => {
+  const { collection } = req.query;
+
+  try {
+    const expression = `folder:"À Propos/Contact"`;
+
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(4)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        ligne1: item.metadata?.ligne1,
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+    console.log(filteredData);
+    console.log(collection);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//// Routes test ////
+
+//////////////////////////
 
 router.get("/test", function (req, res) {
   cloudinary.api.resources_by_asset_folder(
