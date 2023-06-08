@@ -19,7 +19,7 @@ router.get("/homepage", function (req, res) {
 
   cloudinary.search
     .expression(expression)
-    .sort_by("public_id", "desc")
+    .sort_by("created_at", "desc")
     .max_results(500)
     .with_field("metadata")
     .with_field("context")
@@ -28,7 +28,6 @@ router.get("/homepage", function (req, res) {
     .then((result) => {
       const filteredData = result.resources.map((item) => {
         return {
-          collection: item.folder.split("/").pop(),
           src: item.secure_url,
           height: item.height,
           width: item.width,
@@ -49,7 +48,7 @@ router.get("/shop", function (req, res) {
 
   cloudinary.search
     .expression(expression)
-    .sort_by("public_id", "desc")
+    .sort_by("created_at", "desc")
     .max_results(500)
     .with_field("metadata")
     .with_field("image_metadata")
@@ -90,7 +89,7 @@ router.get("/collection", async (req, res) => {
 
     const result = await cloudinary.search
       .expression(expression)
-      .sort_by("public_id", "desc")
+      .sort_by("created_at", "desc")
       .max_results(500)
       .with_field("metadata")
       .with_field("context")
@@ -111,7 +110,6 @@ router.get("/collection", async (req, res) => {
 
     res.status(200).json(filteredData);
     console.log(filteredData);
-    console.log(collection);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -127,7 +125,7 @@ router.get("/product", async (req, res) => {
 
     const result = await cloudinary.search
       .expression(expression)
-      .sort_by("public_id", "desc")
+      .sort_by("created_at", "desc")
       .max_results(500)
       .with_field("metadata")
       .with_field("context")
@@ -215,7 +213,7 @@ router.get("/prestations", function (req, res) {
 
   cloudinary.search
     .expression(expression)
-    .sort_by("public_id", "desc")
+    .sort_by("created_at", "desc")
     .max_results(500)
     .with_field("metadata")
     .with_field("context")
@@ -287,7 +285,7 @@ router.get("/produitsActu", async (req, res) => {
 
     const result = await cloudinary.search
       .expression(expression)
-      .sort_by("public_id", "desc")
+      .sort_by("created_at", "desc")
       .max_results(4)
       .with_field("metadata")
       .with_field("context")
