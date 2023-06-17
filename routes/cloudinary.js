@@ -62,7 +62,6 @@ router.get("/shop", function (req, res) {
           height: item.height,
           width: item.width,
           metadata: item.metadata,
-
           context: item.context,
         };
       });
@@ -103,8 +102,10 @@ router.get("/collection", async (req, res) => {
         width: item.width,
         name: item.metadata.nom_du_produit,
         price: item.metadata.prix,
+        twin: item.metadata.twin,
         context: item.context,
         duree: item.metadata.duree,
+        vin: item.metadata.vin,
       };
     });
 
@@ -119,6 +120,41 @@ router.get("/collection", async (req, res) => {
 //// Génère page produit ///
 
 router.get("/product", async (req, res) => {
+  const { product } = req.query;
+  try {
+    const decodedProduct = decodeURIComponent(product); // Décoder l'URL
+    const cleanedProduct = decodedProduct.replace("%20%26%20", "&");
+
+    const expression = `folder:Shop/* AND metadata.nom_du_produit:"${cleanedProduct}" AND metadata.nom_du_produit = "${cleanedProduct}"`;
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("created_at", "desc")
+      .max_results(500)
+      .with_field("metadata")
+      .with_field("context")
+      .execute();
+
+    const filteredData = result.resources.map((item) => {
+      return {
+        collection: item.folder.split("/").pop(),
+        src: item.secure_url,
+        height: item.height,
+        width: item.width,
+        metadata: item.metadata,
+        context: item.context,
+      };
+    });
+
+    res.status(200).json(filteredData);
+
+    console.log(`ça c'est le ${cleanedProduct}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/*router.get("/product", async (req, res) => {
   const { product } = req.query;
   try {
     const expression = `folder:Shop/* AND metadata.nom_du_produit:"${product}" AND metadata.nom_du_produit = "${product}"`;
@@ -138,19 +174,18 @@ router.get("/product", async (req, res) => {
         height: item.height,
         width: item.width,
         metadata: item.metadata,
-
         context: item.context,
       };
     });
 
     res.status(200).json(filteredData);
-    console.log("yo");
-    console.log(product);
+
+    console.log(`ça c'est le ${product}`);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-});
+});*/
 /// sous catégories du shop, avec "Fleurs" en premier ////
 
 router.get("/shopSubcategories", function (req, res) {
