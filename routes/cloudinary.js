@@ -19,7 +19,7 @@ router.get("/homepage", function (req, res) {
 
   cloudinary.search
     .expression(expression)
-    .sort_by("created_at", "desc")
+    .sort_by("updated_at", "desc")
     .max_results(500)
     .with_field("metadata")
     .with_field("context")
@@ -248,7 +248,7 @@ router.get("/prestations", function (req, res) {
 
   cloudinary.search
     .expression(expression)
-    .sort_by("created_at", "desc")
+    .sort_by("created_at", "asc")
     .max_results(500)
     .with_field("metadata")
     .with_field("context")
@@ -404,6 +404,7 @@ router.get("/mentions", async (req, res) => {
     const filteredData = result.resources.map((item) => {
       return {
         ligne1: item.metadata?.ligne1,
+        ligne2: item.metadata?.ligne2,
         context: item.context,
       };
     });
