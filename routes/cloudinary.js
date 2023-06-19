@@ -15,7 +15,7 @@ cloudinary.config({
 /// Photos de la Home ///
 
 router.get("/homepage", function (req, res) {
-  const expression = `folder:Homepage/* `;
+  const expression = `folder:"Homepage/photos home"`;
 
   cloudinary.search
     .expression(expression)
@@ -32,6 +32,31 @@ router.get("/homepage", function (req, res) {
           height: item.height,
           width: item.width,
           metadata: item.metadata,
+          context: item.context,
+        };
+      });
+      res.json(filteredData);
+      console.log(filteredData);
+    })
+    .catch((error) => console.error());
+});
+
+/// Texte présentation Acampa
+
+router.get("/presentation", function (req, res) {
+  const expression = `folder:"Homepage/Texte présentation"`;
+
+  cloudinary.search
+    .expression(expression)
+    .sort_by("updated_at", "desc")
+    .max_results(500)
+    .with_field("metadata")
+    .with_field("context")
+
+    .execute()
+    .then((result) => {
+      const filteredData = result.resources.map((item) => {
+        return {
           context: item.context,
         };
       });
@@ -88,7 +113,7 @@ router.get("/collection", async (req, res) => {
 
     const result = await cloudinary.search
       .expression(expression)
-      .sort_by("created_at", "desc")
+      .sort_by("created_at", "asc")
       .max_results(500)
       .with_field("metadata")
       .with_field("context")
@@ -244,7 +269,7 @@ router.get("/indexPresta", async (req, res) => {
 /// Photos de presta ///
 
 router.get("/prestations", function (req, res) {
-  const expression = `folder:Prestations/* `;
+  const expression = `folder:"Prestations/Photos"`;
 
   cloudinary.search
     .expression(expression)
@@ -269,6 +294,34 @@ router.get("/prestations", function (req, res) {
       });
       res.json(filteredData);
       console.log(filteredData);
+    })
+    .catch((error) => console.error());
+});
+
+// texte de presta
+
+router.get("/prestationsTexte", function (req, res) {
+  const expression = `folder:"Prestations/Texte"`;
+
+  cloudinary.search
+    .expression(expression)
+    .sort_by("created_at", "asc")
+    .max_results(500)
+    .with_field("metadata")
+    .with_field("context")
+    .execute()
+    .then((result) => {
+      const sortedResources = result.resources.sort((a, b) =>
+        a.folder.localeCompare(b.folder)
+      );
+      const filteredData = sortedResources.map((item) => {
+        return {
+          metadata: item.metadata.nom_du_produit,
+          context: item.context.alt,
+        };
+      });
+      res.json(filteredData);
+      console.log(filteredData[0].context);
     })
     .catch((error) => console.error());
 });
