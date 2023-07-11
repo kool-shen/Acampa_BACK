@@ -5,7 +5,7 @@ const stripe = require("stripe")(process.env.stripe_secret);
 /// route checkout
 
 router.post("/create-checkout-session", async (req, res) => {
-  const { cart } = req.body;
+  const cart = req.body; // Utilisez req.body directement
 
   const lineItems = cart.map((product) => {
     return {
@@ -25,11 +25,12 @@ router.post("/create-checkout-session", async (req, res) => {
     payment_method_types: ["card"],
     line_items: lineItems,
     mode: "payment",
-    success_url: "http://example.com/success",
-    cancel_url: "http://example.com/cancel",
+    success_url: "http://localhost:3001/",
+    cancel_url: "http://localhost:3001/Fleurs",
   });
 
   res.json({ id: session.id });
+  console.log(lineItems);
 });
 
 ////
