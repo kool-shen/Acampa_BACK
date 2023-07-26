@@ -172,7 +172,7 @@ router.get("/product", async (req, res) => {
 
     res.status(200).json(filteredData);
 
-    console.log(`ça c'est le ${cleanedProduct}`);
+    console.log(filteredData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
