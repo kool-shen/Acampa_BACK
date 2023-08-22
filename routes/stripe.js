@@ -25,8 +25,8 @@ router.post("/create-checkout-session", async (req, res) => {
     payment_method_types: ["card"],
     line_items: lineItems,
     mode: "payment",
-    success_url: "https://acampa-back.vercel.app/paymentSuccess",
-    cancel_url: "https://acampa-back.vercel.app/paymentFailed",
+    success_url: "https://acampa-front.vercel.app/paymentSuccess",
+    cancel_url: "https://acampa-front.vercel.app/paymentFailed",
   });
 
   res.json({ id: session.id });
