@@ -14,6 +14,34 @@ cloudinary.config({
 
 /// Photos de la Home ///
 
+router.get("/home", function (req, res) {
+  const expression = `folder:"Homepage/photos home"`;
+
+  cloudinary.search
+    .expression(expression)
+    .sort_by("updated_at", "desc")
+    .max_results(500)
+    .with_field("metadata")
+    .with_field("context")
+
+    .execute()
+    .then((result) => {
+      const filteredData = result.resources.map((item) => {
+        return {
+          src: item.secure_url,
+          height: item.height,
+          width: item.width,
+          metadata: item.metadata,
+          context: item.context,
+        };
+      });
+      res.json(filteredData);
+      console.log(filteredData);
+    })
+    .catch((error) => console.error());
+});
+/////
+
 router.get("/homepage", function (req, res) {
   const expression = `folder:"Homepage/photos home"`;
 
@@ -26,16 +54,19 @@ router.get("/homepage", function (req, res) {
     .execute()
     .then((result) => {
       const filteredData = result.resources.map((item) => {
-        // Utilisez la méthode 'url' avec transformations pour générer l'URL avec q_auto
         const transformation = {
           quality: "auto",
         };
-
-        // Ajoutez l'extension du fichier à la fin du public_id
         const publicIdWithExtension = `${item.public_id}.${item.format}`;
+
+        let resourceType = "image"; // Default to image
+        if (item.resource_type === "video") {
+          resourceType = "video";
+        }
 
         const url = cloudinary.url(publicIdWithExtension, {
           transformation: transformation,
+          resource_type: resourceType, // Specify the resource type
         });
 
         return {
