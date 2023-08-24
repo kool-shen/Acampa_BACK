@@ -66,10 +66,12 @@ router.get("/homepage", function (req, res) {
 
         const url = cloudinary.url(publicIdWithExtension, {
           transformation: transformation,
-          resource_type: resourceType, // Specify the resource type
+          resource_type: resourceType,
+          secure: true,
         });
 
         return {
+          // item: item,
           src: url,
           height: item.height,
           width: item.width,
