@@ -12,6 +12,18 @@ cloudinary.config({
   metadata: true,
 });
 
+/// fonction pour convertir string en number (pour durée et montant) ///
+
+function convertIntoNumber(stringArray) {
+  if (stringArray && stringArray.length > 0) {
+    return stringArray.map(function (string) {
+      return Number(string);
+    });
+  } else {
+    return null;
+  }
+}
+
 /// Photos de la Home ///
 
 router.get("/home", function (req, res) {
@@ -174,7 +186,7 @@ router.get("/collection", async (req, res) => {
         price: item.metadata.prix,
         twin: item.metadata.twin,
         context: item.context,
-        duree: item.metadata.duree,
+        duree: convertIntoNumber(item.metadata.duree),
         vin: item.metadata.vin,
       };
     });
@@ -211,13 +223,15 @@ router.get("/product", async (req, res) => {
         height: item.height,
         width: item.width,
         metadata: item.metadata,
+        montant: convertIntoNumber(item.metadata?.montant_carte_cadeau),
+        duree: convertIntoNumber(item.metadata?.duree),
         context: item.context,
       };
     });
 
     res.status(200).json(filteredData);
 
-    console.log(filteredData);
+    console.log(product);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -255,7 +269,9 @@ router.get("/product", async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-});*/
+});
+
+*/
 /// sous catégories du shop, avec "Fleurs" en premier ////
 
 router.get("/shopSubcategories", function (req, res) {
