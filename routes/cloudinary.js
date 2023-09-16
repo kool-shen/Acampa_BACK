@@ -85,8 +85,8 @@ router.get("/homepage", function (req, res) {
         return {
           // item: item,
           src: url,
-          height: item.height,
-          width: item.width,
+          height: item.height / 10,
+          width: item.width / 10,
           metadata: item.metadata,
           context: item.context,
         };
