@@ -85,15 +85,15 @@ router.get("/homepage", function (req, res) {
         return {
           // item: item,
           src: url,
-          height: item.height / 20,
-          width: item.width / 20,
+          height: item.height / 15,
+          width: item.width / 15,
           metadata: item.metadata,
           context: item.context,
         };
       });
 
       res.json(filteredData);
-      console.log(filteredData[1].src);
+      console.log(filteredData);
     })
     .catch((error) => console.error(error));
 });
